@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Movie Tier List & World Cup</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        .tier-box { border: 2px solid #333; padding: 10px; min-height: 100px; display: flex; flex-wrap: wrap; gap: 10px; background-color: #f9f9f9; margin-bottom: 20px; }
+        .movie-card { width: 100px; height: 120px; background: #ddd; border: 1px solid #000; display: flex; align-items: center; justify-content: center; cursor: grab; text-align: center; padding: 5px; box-sizing: border-box; }
+        #vote-area { border: 2px solid #007bff; padding: 20px; text-align: center; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+
+    <h1>Movie Tier List App</h1>
+
+    <!-- Voting Section -->
+    <div id="vote-area">
+        <h2>Movie World Cup</h2>
+        <div id="vs-container">
+            <button onclick="vote('Parasite')">Parasite</button> vs <button onclick="vote('Interstellar')">Interstellar</button>
+        </div>
+    </div>
+
+    <!-- Tier List Section -->
+    <h2>Tier List</h2>
+    <h3>S Tier</h3>
+    <div class="tier-box" id="S" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+    <h3>A Tier</h3>
+    <div class="tier-box" id="A" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+
+    <h3>Movie Pool</h3>
+    <div id="movie-pool" class="tier-box" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <!-- Movies will be loaded here via JS -->
+    </div>
+
+    <section id="history-section">
+    <h2>Activity Log</h2>
+    <div id="log-container" style="border: 1px solid #ccc; height: 100px; overflow-y: scroll; padding: 10px;">
+        <ul id="log-list" style="list-style: none; padding: 0;"></ul>
+    </div>
+    </section>
+    
+    <script>
+        // 1. Data (Simulating JSON)
+        const movies = [
+            { id: "m1", title: "Parasite" },
+            { id: "m2", title: "Interstellar" },
+            { id: "m3", title: "The Dark Knight" }
+        ];
+
+        // 2. Load Movies into Pool
+        function initApp() {
+            console.log("initApp 함수 실행됨!");
+
+            let state = JSON.parse(localStorage.getItem('tierState')) || { S: [], A: [], pool: [] };
+
+            if (!state.pool || (state.S.length === 0 && state.A.length === 0 && state.pool.length === 0)) {
+                state.pool = movies.map(m => m.id); 
+            }
+
+            // 수정된 부분: HTML ID와 state 키를 매핑해줍니다.
+            const tierMapping = [
+                { id: 'S', key: 'S' },
+                { id: 'A', key: 'A' },
+                { id: 'movie-pool', key: 'pool' } // HTML ID는 'movie-pool', state 키는 'pool'
+            ];
+            
+            tierMapping.forEach(item => {
+                const container = document.getElementById(item.id);
+                
+                if (container) {
+                    container.innerHTML = ""; 
+                    const movieList = state[item.key] || []; // 여기서 item.key를 사용!
+                    
+                    movieList.forEach(movieId => {
+                        const movie = movies.find(m => m.id === movieId);
+                        if (movie) {
+                            const div = document.createElement("div");
+                            div.className = "movie-card";
+                            div.draggable = true;
+                            div.id = movie.id;
+                            div.innerText = movie.title;
+                            div.ondragstart = drag;
+                            container.appendChild(div);
+                        }
+                    });
+                }
+            });
+        }
+
+        // 3. Drag and Drop Logic
+        function allowDrop(ev) { ev.preventDefault(); }
+        function drag(ev) { ev.dataTransfer.setData("text", ev.target.id); }
+        function drop(ev) {
+            ev.preventDefault();
+            const data = ev.dataTransfer.getData("text");
+            const target = ev.target.closest('.tier-box');
+            if (target) {
+                target.appendChild(document.getElementById(data));
+                saveState();
+            }
+        }
+
+        // 4. Persistence
+        function saveState() {
+            const state = {
+                S: Array.from(document.getElementById('S').children).map(c => c.id),
+                A: Array.from(document.getElementById('A').children).map(c => c.id),
+                pool: Array.from(document.getElementById('movie-pool').children).map(c => c.id)
+            };
+            localStorage.setItem('tierState', JSON.stringify(state));
+        }
+
+        // 5. Voting
+        function vote(movieName) {
+            alert("Voted for: " + movieName + "\n(Integration with Firebase for global ranking is the next step!)");
+        }
+
+                // 1. 앱이 처음 시작될 때
+        window.onload = () => {
+            console.log("System: Movie Tier List App Initialized");
+            initApp();
+            
+            // 2. 데이터 로드 시
+            const savedData = localStorage.getItem('movieData');
+            if (savedData) {
+                console.log("Status: Data loaded successfully from localStorage.");
+            } else {
+                console.log("Info: No saved data found, starting fresh.");
+            }
+        };
+
+        // 3. 투표나 드래그가 발생할 때 (예: 저장 함수 내부)
+        function saveData() {
+            // ... 저장 로직 ...
+            console.log("Action: Data saved to localStorage.");
+        } 
+    </script>
+</body>
+</html>
