@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Movie Tier List & World Cup</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; }
+        .tier-box { border: 2px solid #333; padding: 10px; min-height: 100px; display: flex; flex-wrap: wrap; gap: 10px; background-color: #f9f9f9; margin-bottom: 20px; }
+        .movie-card { width: 100px; height: 120px; background: #ddd; border: 1px solid #000; display: flex; align-items: center; justify-content: center; cursor: grab; text-align: center; padding: 5px; box-sizing: border-box; }
+        #vote-area { border: 2px solid #007bff; padding: 20px; text-align: center; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Movie Tier List App</h1>
+
+    <!-- Voting Section -->
+    <div id="vote-area">
+        <h2>Movie World Cup</h2>
+        <div id="vs-container">
+            <button onclick="vote('Parasite')">Parasite</button> vs <button onclick="vote('Interstellar')">Interstellar</button>
+        </div>
+    </div>
+
+    <!-- Tier List Section -->
+    <h2>Tier List</h2>
+    <h3>S Tier</h3>
+    <div class="tier-box" id="S" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+    <h3>A Tier</h3>
+    <div class="tier-box" id="A" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+
+    <h3>Movie Pool</h3>
+    <div id="movie-pool" class="tier-box" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <!-- Movies will be loaded here via JS -->
+    </div>
+
+    <script>
+        // 1. Data (Simulating JSON)
+        const movies = [
+            { id: "m1", title: "Parasite" },
+            { id: "m2", title: "Interstellar" },
+            { id: "m3", title: "The Dark Knight" }
+        ];
+
+        // 2. Load Movies into Pool
+        function initApp() {
+            const saved = localStorage.getItem('tierState');
+            if (saved) {
+                const state = JSON.parse(saved);
+                document.getElementById('S').innerHTML = state.S;
+                document.getElementById('A').innerHTML = state.A;
+                document.getElementById('movie-pool').innerHTML = state.pool;
+            } else {
+                const pool = document.getElementById('movie-pool');
+                movies.forEach(movie => {
+                    const card = document.createElement('div');
+                    card.className = 'movie-card';
+                    card.draggable = true;
+                    card.id = movie.id;
+                    card.innerText = movie.title;
+                    card.ondragstart = drag;
+                    pool.appendChild(card);
+                });
+            }
+        }
+
+        // 3. Drag and Drop Logic
+        function allowDrop(ev) { ev.preventDefault(); }
+        function drag(ev) { ev.dataTransfer.setData("text", ev.target.id); }
+        function drop(ev) {
+            ev.preventDefault();
+            const data = ev.dataTransfer.getData("text");
+            const target = ev.target.closest('.tier-box');
+            if (target) {
+                target.appendChild(document.getElementById(data));
+                saveState();
+            }
+        }
+
+        // 4. Persistence
+        function saveState() {
+            const state = {
+                S: document.getElementById('S').innerHTML,
+                A: document.getElementById('A').innerHTML,
+                pool: document.getElementById('movie-pool').innerHTML
+            };
+            localStorage.setItem('tierState', JSON.stringify(state));
+        }
+
+        // 5. Voting
+        function vote(movieName) {
+            alert("Voted for: " + movieName + "\n(Integration with Firebase for global ranking is the next step!)");
+        }
+
+        window.onload = initApp;
+    </script>
+</body>
+</html>

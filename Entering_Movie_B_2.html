@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>나의 영화 티어리스트 | My Movie Tier List</title>
+<style>
+  body { font-family: 'Apple SD Gothic Neo', sans-serif; margin: 0; padding: 20px; background: #1a1a2e; color: #eee; }
+  h1 { text-align: center; }
+  h2 { border-left: 5px solid #e94560; padding-left: 10px; margin-top: 40px; }
+  .sub { color: #aaa; font-size: 14px; font-weight: normal; } /* English sub-text */
+  .card {
+    width: 110px; height: 150px; border-radius: 8px; cursor: grab;
+    display: flex; align-items: flex-end; justify-content: center;
+    color: white; font-weight: bold; text-align: center; font-size: 13px;
+    background-size: cover; background-position: center;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.5); overflow: hidden;
+  }
+  .card span { background: rgba(0,0,0,0.6); width: 100%; padding: 4px 0; }
+
+  /* 월드컵 / World Cup */
+  #worldcup { text-align: center; }
+  .vs-wrap { display: flex; justify-content: center; align-items: center; gap: 20px; margin-top: 15px; flex-wrap: wrap; }
+  .vs-card { cursor: pointer; transition: transform 0.15s; }
+  .vs-card:hover { transform: scale(1.08); }
+  .vs-text { font-size: 30px; color: #e94560; font-weight: bold; }
+
+  /* 티어 / Tier */
+  .tier-row { display: flex; align-items: stretch; margin-bottom: 8px; border-radius: 6px; overflow: hidden; }
+  .tier-label { width: 60px; display: flex; align-items: center; justify-content: center; font-size: 24px; font-weight: bold; color: #1a1a2e; }
+  .tier-box { flex: 1; min-height: 160px; background: #16213e; padding: 8px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .S .tier-label { background: #ff7675; }
+  .A .tier-label { background: #fdcb6e; }
+  .B .tier-label { background: #55efc4; }
+  .C .tier-label { background: #74b9ff; }
+  #pool { background: #0f3460; padding: 12px; border-radius: 6px; display: flex; flex-wrap: wrap; gap: 8px; min-height: 160px; }
+
+  /* 순위 / Ranking */
+  #ranking { list-style: none; padding: 0; }
+  #ranking li { background: #16213e; margin-bottom: 6px; padding: 10px 15px; border-radius: 6px; display: flex; justify-content: space-between; }
+  .reset-btn { background: #e94560; color: white; border: none; padding: 8px 16px; border-radius: 6px; cursor: pointer; margin-top: 10px; }
+</style>
+</head>
+<body>
+  <h1>🎬 나의 영화 티어리스트 <span class="sub">My Movie Tier List</span></h1>
+
+  <!-- 1. 이상형 월드컵 / Movie World Cup -->
+  <section id="worldcup">
+    <h2>이상형 월드컵 <span class="sub">Movie World Cup</span></h2>
+    <p>둘 중 더 좋아하는 영화를 골라주세요!<br>
+       <span class="sub">Choose the movie you like more!</span></p>
+    <div class="vs-wrap" id="vsWrap"></div>
+  </section>
+
+  <!-- 2. 전체 평균 순위 / Global Ranking -->
+  <section>
+    <h2>전체 평균 순위 <span class="sub">Global Ranking (by votes)</span></h2>
+    <ol id="ranking"></ol>
+    <button class="reset-btn" onclick="resetAll()">모든 데이터 초기화 / Reset All Data</button>
+  </section>
+
+  <!-- 3. 티어리스트 / Tier List -->
+  <section>
+    <h2>티어리스트 <span class="sub">Tier List (Drag &amp; Drop)</span></h2>
+    <div class="tier-row S"><div class="tier-label">S</div><div class="tier-box" data-tier="S" ondrop="drop(event)" ondragover="allow(event)"></div></div>
+    <div class="tier-row A"><div class="tier-label">A</div><div class="tier-box" data-tier="A" ondrop="drop(event)" ondragover="allow(event)"></div></div>
+    <div class="tier-row B"><div class="tier-label">B</div><div class="tier-box" data-tier="B" ondrop="drop(event)" ondragover="allow(event)"></div></div>
+    <div class="tier-row C"><div class="tier-label">C</div><div class="tier-box" data-tier="C" ondrop="drop(event)" ondragover="allow(event)"></div></div>
+
+    <h3>영화 목록 <span class="sub">Movie List (drag from here)</span></h3>
+    <div id="pool" data-tier="pool" ondrop="drop(event)" ondragover="allow(event)"></div>
+  </section>
+
+<script>
+  /* ===== 1. 영화 데이터 (JSON 파일 대체) / Movie Data (replaces JSON file) =====
+     title: 한국어 제목 / Korean title
+     en   : 영어 제목   / English title  */
+  const MOVIES = [
+    { id: "m1", title: "기생충",     en: "Parasite",       color: "#6c5ce7" },
+    { id: "m2", title: "인터스텔라", en: "Interstellar",   color: "#0984e3" },
+    { id: "m3", title: "다크나이트", en: "The Dark Knight",color: "#2d3436" },
+    { id: "m4", title: "라라랜드",   en: "La La Land",     color: "#e84393" },
+    { id: "m5", title: "어벤져스",   en: "The Avengers",   color: "#d63031" },
+    { id: "m6", title: "토이스토리", en: "Toy Story",      color: "#00b894" },
+    { id: "m7", title: "타이타닉",   en: "Titanic",        color: "#0652DD" },
+    { id: "m8", title: "조커",       en: "Joker",          color: "#6F1E51" }
+  ];
+  /* 포스터 이미지 URL이 있다면 color 대신 아래처럼 쓰면 됩니다 / Use img instead of color if you have a poster URL:
+     { id:"m1", title:"기생충", en:"Parasite", img:"https://.../poster.jpg" } */
+
+  /* ===== 상태 저장소 / State storage ===== */
+  let votes = JSON.parse(localStorage.getItem("votes") || "{}");        // 득표수 / vote counts
+  let tierState = JSON.parse(localStorage.getItem("tierState") || "{}"); // 카드 위치 / card positions
+
+  /* ===== 카드 HTML 생성 / Build card HTML ===== */
+  function makeCard(movie) {
+    const bg = movie.img ? `background-image:url('${movie.img}')` : `background:${movie.color}`;
+    // 카드에 한국어 + 영어 함께 표시 / Show Korean + English on the card
+    return `<div class="card" id="${movie.id}" draggable="true" ondragstart="drag(event)" style="${bg}">
+              <span>${movie.title}<br><small>${movie.en}</small></span>
+            </div>`;
+  }
+
+  /* ===== 티어리스트 그리기 / Render tier list ===== */
+  function renderTiers() {
+    document.querySelectorAll('.tier-box, #pool').forEach(b => b.innerHTML = "");
+    MOVIES.forEach(movie => {
+      const tier = tierState[movie.id] || "pool";   // 저장된 위치 / saved position
+      const box = document.querySelector(`[data-tier="${tier}"]`);
+      if (box) box.insertAdjacentHTML('beforeend', makeCard(movie));
+    });
+  }
+
+  /* ===== 드래그 앤 드롭 / Drag and Drop ===== */
+  function allow(e){ e.preventDefault(); }
+  function drag(e){ e.dataTransfer.setData("id", e.target.closest('.card').id); }
+  function drop(e){
+    e.preventDefault();
+    const id = e.dataTransfer.getData("id");
+    const box = e.target.closest('[data-tier]');
+    if (!box) return;
+    tierState[id] = box.getAttribute("data-tier");   // 위치 저장 / save position
+    localStorage.setItem("tierState", JSON.stringify(tierState));
+    renderTiers();
+  }
+
+  /* ===== 이상형 월드컵 / Movie World Cup ===== */
+  function pickTwo() {
+    const shuffled = [...MOVIES].sort(() => Math.random() - 0.5);
+    return [shuffled[0], shuffled[1]];
+  }
+  function renderWorldcup() {
+    const [a, b] = pickTwo();
+    document.getElementById("vsWrap").innerHTML =
+      `<div class="vs-card" onclick="vote('${a.id}')">${makeCard(a)}</div>
+       <div class="vs-text">VS</div>
+       <div class="vs-card" onclick="vote('${b.id}')">${makeCard(b)}</div>`;
+  }
+  function vote(id) {
+    votes[id] = (votes[id] || 0) + 1;                 // 득표 +1 / vote +1
+    localStorage.setItem("votes", JSON.stringify(votes));
+    // ※ 실제 서버 연동 시 여기서 전송 / Send to server here for real global aggregation
+    renderRanking();
+    renderWorldcup();  // 다음 대결 / next match
+  }
+
+  /* ===== 전체 평균 순위 / Global Ranking ===== */
+  function renderRanking() {
+    const sorted = [...MOVIES].sort((x, y) => (votes[y.id]||0) - (votes[x.id]||0));
+    document.getElementById("ranking").innerHTML = sorted.map((m, i) =>
+      `<li><span>${i+1}위 / No.${i+1} - ${m.title} (${m.en})</span><span>${votes[m.id]||0} 표 / votes</span></li>`
+    ).join("");
+  }
+
+  /* ===== 초기화 / Reset ===== */
+  function resetAll() {
+    if(!confirm("투표와 티어 배치를 모두 초기화할까요?\nReset all votes and tier placements?")) return;
+    localStorage.removeItem("votes");
+    localStorage.removeItem("tierState");
+    votes = {}; tierState = {};
+    init();
+  }
+
+  /* ===== 시작 / Start ===== */
+  function init() {
+    renderWorldcup();
+    renderRanking();
+    renderTiers();
+  }
+  window.onload = init;
+</script>
+</body>
+</html>

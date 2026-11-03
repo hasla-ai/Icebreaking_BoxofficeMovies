@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Movie Tier List & World Cup</title>
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        .container { display: flex; flex-direction: column; gap: 20px; }
+        /* Styling for the tier containers */
+        .tier-box { border: 2px solid #333; padding: 10px; min-height: 100px; display: flex; flex-wrap: wrap; gap: 10px; background-color: #f9f9f9; }
+        /* Styling for the movie cards */
+        .movie-card { width: 100px; height: 150px; background: #888; color: white; display: flex; align-items: center; justify-content: center; cursor: grab; border: 1px solid #000; }
+        #vote-area { border: 1px solid #ccc; padding: 20px; margin-bottom: 20px; }
+    </style>
+</head>
+<body>
+    <h1>Movie Tier List</h1>
+    
+    <!-- Voting Section -->
+    <div id="vote-area">
+        <h2>Movie World Cup</h2>
+        <div id="vs-container">
+            <button onclick="vote(0)">Movie A</button> vs <button onclick="vote(1)">Movie B</button>
+        </div>
+    </div>
+
+    <hr>
+
+    <!-- Tier List Section -->
+    <h2>Tier List (Drag & Drop)</h2>
+    <div id="tier-list">
+        <h3>S Tier</h3>
+        <div class="tier-box" id="S" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+        <h3>A Tier</h3>
+        <div class="tier-box" id="A" ondrop="drop(event)" ondragover="allowDrop(event)"></div>
+    </div>
+
+    <h3>Movie Pool</h3>
+    <div id="movie-pool" class="tier-box" ondrop="drop(event)" ondragover="allowDrop(event)">
+        <div class="movie-card" draggable="true" ondragstart="drag(event)" id="movie1">Parasite</div>
+        <div class="movie-card" draggable="true" ondragstart="drag(event)" id="movie2">Interstellar</div>
+    </div>
+
+    <script>
+        // Allow the element to be dropped
+        function allowDrop(ev) {
+            ev.preventDefault();
+        }
+
+        // Set the data to be dragged
+        function drag(ev) {
+            ev.dataTransfer.setData("text", ev.target.id);
+        }
+
+        // Handle the drop event and save state
+        function drop(ev) {
+            ev.preventDefault();
+            var data = ev.dataTransfer.getData("text");
+            ev.target.appendChild(document.getElementById(data));
+            saveState();
+        }
+
+        // Save the current layout to LocalStorage
+        function saveState() {
+            localStorage.setItem('tierData', document.getElementById('tier-list').innerHTML);
+        }
+
+        // Simulation for voting logic
+        function vote(idx) {
+            alert("Movie " + (idx === 0 ? "A" : "B") + " selected! (Server integration pending)");
+        }
+
+        // Restore the layout on page load
+        window.onload = () => {
+            const saved = localStorage.getItem('tierData');
+            if(saved) document.getElementById('tier-list').innerHTML = saved;
+        };
+    </script>
+</body>
+</html>
