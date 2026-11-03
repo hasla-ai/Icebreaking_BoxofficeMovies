@@ -71,13 +71,6 @@
     <div id="pool" data-tier="pool" ondrop="drop(event)" ondragover="allow(event)"></div>
   </section>
 
-  <section id="history-section">
-    <h2>Activity Log</h2>
-    <div id="log-container" style="border: 1px solid #ccc; height: 100px; overflow-y: scroll; padding: 10px;">
-        <ul id="log-list" style="list-style: none; padding: 0;"></ul>
-    </div>
-  </section>
-
 <script>
   /* ===== 1. 영화 데이터 (JSON 파일 대체) / Movie Data (replaces JSON file) =====
      title: 한국어 제목 / Korean title
@@ -175,25 +168,6 @@
     renderTiers();
   }
   window.onload = init;
-
-                  // 1. 앱이 처음 시작될 때
-        window.onload = () => {
-            console.log("System: Movie Tier List App Initialized");
-            
-            // 2. 데이터 로드 시
-            const savedData = localStorage.getItem('movieData');
-            if (savedData) {
-                console.log("Status: Data loaded successfully from localStorage.");
-            } else {
-                console.log("Info: No saved data found, starting fresh.");
-            }
-        };
-
-        // 3. 투표나 드래그가 발생할 때 (예: 저장 함수 내부)
-        function saveData() {
-            // ... 저장 로직 ...
-            console.log("Action: Data saved to localStorage.");
-        }
 </script>
 </body>
 </html>
