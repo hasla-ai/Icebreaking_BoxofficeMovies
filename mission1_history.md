@@ -3,6 +3,8 @@
 - AI A 이름 / 대화 공유 링크 또는 캡처 파일명: Gemini 3.1 Flash Lite
 [mission1_Model_A_log.md](./mission1_Model_A_log.md)
 
+consol_log(w/ Live Server) : 
+
 - AI B 이름 / 대화 공유 링크 또는 캡처 파일명: Claude Opus 4.8
 [mission1_Model_B_log.md](./mission1_Model_B_log.md)
 
