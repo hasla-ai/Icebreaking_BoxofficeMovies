@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BMI 계산기</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      font-family: "Malgun Gothic", "맑은 고딕", sans-serif;
+      background: #f0f4f8;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      margin: 0;
+      padding: 40px 16px;
+    }
+    .card {
+      background: #fff;
+      width: 100%;
+      max-width: 380px;
+      padding: 28px 24px;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+    }
+    h1 { font-size: 22px; text-align: center; margin: 0 0 4px; color: #222; }
+    .sub { text-align: center; color: #888; font-size: 13px; margin-bottom: 20px; }
+    label { display: block; font-size: 14px; color: #444; margin: 14px 0 6px; }
+    input[type="number"] {
+      width: 100%; padding: 10px 12px; font-size: 16px;
+      border: 1px solid #cfd8e3; border-radius: 8px; outline: none;
+    }
+    input:focus { border-color: #4a90d9; }
+    .btns { display: flex; gap: 10px; margin-top: 20px; }
+    button {
+      flex: 1; padding: 11px 0; font-size: 15px; border: none;
+      border-radius: 8px; cursor: pointer; font-weight: 600;
+    }
+    .calc { background: #4a90d9; color: #fff; }
+    .calc:hover { background: #3b7bc0; }
+    .reset { background: #e6ebf1; color: #444; }
+    .reset:hover { background: #d6dde6; }
+    #result {
+      margin-top: 22px; padding: 18px; border-radius: 10px;
+      background: #f7f9fc; text-align: center; min-height: 52px;
+    }
+    .bmi-num { font-size: 30px; font-weight: 700; }
+    .bmi-cat { font-size: 16px; margin-top: 4px; font-weight: 600; }
+    .range { font-size: 13px; color: #666; margin-top: 8px; }
+    .msg { color: #d9534f; font-weight: 600; font-size: 15px; }
+    /* 단계별 색상 */
+    .low    { color: #3b7bc0; }  /* 저체중 */
+    .normal { color: #2e9e5b; }  /* 정상 */
+    .over   { color: #e8820c; }  /* 과체중 */
+    .obese  { color: #d9534f; }  /* 비만 */
+    .note { font-size: 11px; color: #aaa; text-align: center; margin-top: 16px; line-height: 1.5; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h1>BMI 계산기</h1>
+    <p class="sub">키·몸무게 입력 후 버튼 한 번으로 즉시 확인</p>
+
+    <label for="height">키 (cm)</label>
+    <input type="number" id="height" placeholder="예: 170" min="0" step="0.1">
+
+    <label for="weight">몸무게 (kg)</label>
+    <input type="number" id="weight" placeholder="예: 65" min="0" step="0.1">
+
+    <div class="btns">
+      <button class="calc" onclick="calculate()">계산하기</button>
+      <button class="reset" onclick="resetForm()">초기화</button>
+    </div>
+
+    <div id="result">
+      <span class="range">키와 몸무게를 입력하세요</span>
+    </div>
+
+    <p class="note">
+      본 계산기는 참고용이며 의학적 진단·조언을 제공하지 않습니다.<br>
+      구간 기준은 발표·인용 전 공식 출처(대한비만학회 등)를 확인하세요.
+    </p>
+  </div>
+
+  <script>
+    function calculate() {
+      var hRaw = document.getElementById("height").value.trim();
+      var wRaw = document.getElementById("weight").value.trim();
+      var result = document.getElementById("result");
+
+      // 1) 빈칸 / 숫자가 아님 / 0 이하 → 안내 메시지, 결과는 바뀌지 않도록 별도 처리
+      var h = Number(hRaw);
+      var w = Number(wRaw);
+
+      if (hRaw === "" || wRaw === "" ||      // 빈칸
+          isNaN(h) || isNaN(w) ||            // 숫자가 아님
+          h <= 0 || w <= 0) {                // 0 이하(음수·0 포함)
+        result.innerHTML = '<span class="msg">올바른 값을 입력하세요</span>';
+        return;
+      }
+
+      // 2) BMI 계산: 몸무게(kg) ÷ (키(m) × 키(m))
+      var hM = h / 100;                       // cm → m
+      var bmi = w / (hM * hM);
+      var bmiRounded = (Math.round(bmi * 100) / 100).toFixed(2); // 소수 둘째 자리 반올림
+
+      // 3) 비만도 단계 (이상/미만 기준 명확화)
+      var category, cls;
+      if (bmi < 18.5)       { category = "저체중"; cls = "low"; }
+      else if (bmi < 23)    { category = "정상";   cls = "normal"; }
+      else if (bmi < 25)    { category = "과체중"; cls = "over"; }
+      else                  { category = "비만";   cls = "obese"; }
+
+      // 4) 적정 체중 범위: 정상 BMI(18.5 ~ 22.9)에 해당하는 몸무게(kg)
+      //    (상한은 '23 미만'이므로 22.9 기준으로 표시)
+      var minW = (18.5 * hM * hM).toFixed(1);
+      var maxW = (22.9 * hM * hM).toFixed(1);
+
+      result.innerHTML =
+        '<div class="bmi-num ' + cls + '">' + bmiRounded + '</div>' +
+        '<div class="bmi-cat ' + cls + '">' + category + '</div>' +
+        '<div class="range">정상 체중 범위: ' + minW + ' ~ ' + maxW + ' kg</div>';
+    }
+
+    function resetForm() {
+      document.getElementById("height").value = "";
+      document.getElementById("weight").value = "";
+      document.getElementById("result").innerHTML =
+        '<span class="range">키와 몸무게를 입력하세요</span>';
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BMI 계산기</title>
+<style>
+  body { font-family: "Malgun Gothic", sans-serif; background:#f4f6f8;
+         display:flex; justify-content:center; padding:40px 12px; }
+  .card { background:#fff; padding:28px 24px; border-radius:14px;
+          box-shadow:0 4px 16px rgba(0,0,0,.08); width:340px; }
+  h1 { font-size:22px; text-align:center; margin:0 0 6px; }
+  .hint { font-size:12px; color:#888; text-align:center; margin:0 0 18px; }
+  label { display:block; font-size:14px; margin:12px 0 4px; font-weight:600; }
+  input { width:100%; box-sizing:border-box; padding:10px; font-size:15px;
+          border:1px solid #ccc; border-radius:8px; }
+  .btns { display:flex; gap:8px; margin-top:18px; }
+  button { flex:1; padding:11px; font-size:15px; border:none; border-radius:8px;
+           cursor:pointer; font-weight:600; }
+  .calc { background:#3498db; color:#fff; }
+  .reset { background:#e9ecef; color:#333; }
+  #result { margin-top:20px; padding:16px; border-radius:10px; text-align:center;
+            background:#f8f9fa; min-height:24px; }
+  #result .bmi { font-size:28px; font-weight:700; }
+  #result .stage { font-size:17px; font-weight:600; margin-top:4px; }
+  #result .ideal { font-size:13px; color:#555; margin-top:8px; }
+  #result .warn { color:#d9534f; font-size:15px; font-weight:600; }
+  /* 단계별 색상 */
+  .low    { color:#2980b9; }  /* 저체중 */
+  .normal { color:#27ae60; }  /* 정상   */
+  .over   { color:#e67e22; }  /* 과체중 */
+  .obese  { color:#c0392b; }  /* 비만   */
+</style>
+</head>
+<body>
+  <div class="card">
+    <h1>BMI 계산기</h1>
+    <p class="hint">키·몸무게 입력 후 [계산하기]를 누르세요</p>
+
+    <label for="height">키 (cm)</label>
+    <input type="number" id="height" placeholder="예: 170 (100~250)">
+
+    <label for="weight">몸무게 (kg)</label>
+    <input type="number" id="weight" placeholder="예: 65 (20~200)">
+
+    <div class="btns">
+      <button class="calc"  onclick="calcBMI()">계산하기</button>
+      <button class="reset" onclick="resetAll()">초기화</button>
+    </div>
+
+    <div id="result"></div>
+  </div>
+
+<script>
+  // 현실적 입력 범위 (경계값 포함)
+  var H_MIN = 100, H_MAX = 250;   // 키 cm
+  var W_MIN = 20,  W_MAX = 200;   // 몸무게 kg
+
+  function calcBMI() {
+    var hRaw = document.getElementById("height").value.trim();
+    var wRaw = document.getElementById("weight").value.trim();
+    var result = document.getElementById("result");
+
+    var h = Number(hRaw);
+    var w = Number(wRaw);
+
+    // 1) 빈칸 / 숫자 아님 / 0 이하 검증
+    if (hRaw === "" || wRaw === "" || isNaN(h) || isNaN(w) || h <= 0 || w <= 0) {
+      result.innerHTML = '<span class="warn">올바른 값을 입력하세요<br>' +
+                         '(키·몸무게는 0보다 큰 숫자)</span>';
+      return;
+    }
+
+    // 2) 현실적 범위 검증 (키 100~250cm, 몸무게 20~200kg)
+    if (h < H_MIN || h > H_MAX) {
+      result.innerHTML = '<span class="warn">키는 ' + H_MIN + '~' + H_MAX +
+                         'cm 사이로 입력하세요</span>';
+      return;
+    }
+    if (w < W_MIN || w > W_MAX) {
+      result.innerHTML = '<span class="warn">몸무게는 ' + W_MIN + '~' + W_MAX +
+                         'kg 사이로 입력하세요</span>';
+      return;
+    }
+
+    // 3) BMI 계산 (소수 둘째 자리 반올림)
+    var m = h / 100;
+    var bmi = w / (m * m);
+    var bmiShow = (Math.round(bmi * 100) / 100).toFixed(2);
+
+    // 4) 비만도 단계 (이상/미만 명확)
+    var stage, cls;
+    if (bmi < 18.5)      { stage = "저체중"; cls = "low"; }
+    else if (bmi < 23)   { stage = "정상";   cls = "normal"; }
+    else if (bmi < 25)   { stage = "과체중"; cls = "over"; }
+    else                 { stage = "비만";   cls = "obese"; }
+
+    // 5) 적정 체중 범위 (정상 BMI 18.5 ~ 22.9 기준 kg)
+    var wLow  = (18.5 * m * m).toFixed(1);
+    var wHigh = (22.9 * m * m).toFixed(1);
+
+    result.innerHTML =
+      '<div class="bmi ' + cls + '">' + bmiShow + '</div>' +
+      '<div class="stage ' + cls + '">' + stage + '</div>' +
+      '<div class="ideal">적정 체중 범위: ' + wLow + ' ~ ' + wHigh + ' kg</div>';
+  }
+
+  function resetAll() {
+    document.getElementById("height").value = "";
+    document.getElementById("weight").value = "";
+    document.getElementById("result").innerHTML = "";
+  }
+</script>
+</body>
+</html>
