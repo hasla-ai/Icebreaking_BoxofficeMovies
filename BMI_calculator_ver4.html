@@ -1,0 +1,677 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#111a1d">
+  <meta name="description" content="A self-contained BMI calculator and approachable field guide to DNA, AI, and the limits of health prediction.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data:; connect-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>BMI / Beyond — DNA & AI Field Guide</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #111a1d;
+      --ink-2: #1a2729;
+      --paper: #f1f0e9;
+      --paper-2: #e7e7dc;
+      --white: #fffef9;
+      --muted: #687272;
+      --line: rgba(17, 26, 29, .14);
+      --lime: #d4ff63;
+      --violet: #b8a8ff;
+      --coral: #ff887a;
+      --mint: #9fe4ce;
+      --radius: 22px;
+      --shadow: 0 18px 55px rgba(17, 26, 29, .08);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-synthesis: none;
+      text-rendering: optimizeLegibility;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: var(--paper); color: var(--ink); }
+    button, input { font: inherit; }
+    button, a, input { -webkit-tap-highlight-color: transparent; }
+    a { color: inherit; }
+    .skip-link { position: absolute; left: 16px; top: -60px; z-index: 20; padding: 12px 16px; background: var(--lime); color: var(--ink); border-radius: 8px; }
+    .skip-link:focus { top: 16px; }
+    .shell { width: min(1180px, calc(100% - 44px)); margin: 0 auto; }
+    .topbar { position: relative; z-index: 2; background: var(--ink); color: var(--white); border-bottom: 1px solid rgba(255,255,255,.12); }
+    .topbar-inner { min-height: 76px; display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+    .brand { display: inline-flex; align-items: center; gap: 11px; text-decoration: none; font-size: 13px; font-weight: 800; letter-spacing: .11em; text-transform: uppercase; }
+    .brand-mark { display: grid; place-items: center; width: 31px; height: 31px; border-radius: 9px; background: var(--lime); color: var(--ink); font-size: 12px; letter-spacing: -.08em; }
+    .topnav { display: flex; gap: clamp(14px, 3vw, 34px); align-items: center; font-size: 12px; color: rgba(255,255,255,.72); }
+    .topnav a { text-decoration: none; transition: color .2s ease; }
+    .topnav a:hover, .topnav a:focus-visible { color: var(--lime); }
+    .nav-tag { padding: 8px 11px; border: 1px solid rgba(255,255,255,.2); color: var(--lime); border-radius: 999px; font-size: 10px; letter-spacing: .1em; text-transform: uppercase; white-space: nowrap; }
+
+    .hero { overflow: hidden; position: relative; background: var(--ink); color: var(--white); padding: clamp(56px, 8vw, 105px) 0 70px; }
+    .hero::before { content: ""; position: absolute; width: 580px; height: 580px; right: -190px; top: -280px; border: 1px solid rgba(212,255,99,.13); border-radius: 50%; box-shadow: 0 0 0 54px rgba(212,255,99,.025), 0 0 0 112px rgba(212,255,99,.02); }
+    .hero-grid { position: relative; display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(280px, .85fr); align-items: center; gap: clamp(30px, 7vw, 90px); }
+    .eyebrow { display: flex; align-items: center; gap: 9px; color: var(--lime); font-size: 10px; font-weight: 800; letter-spacing: .17em; text-transform: uppercase; }
+    .eyebrow::before { content: ""; width: 22px; height: 1px; background: currentColor; }
+    h1 { max-width: 700px; margin: 22px 0 20px; font-size: clamp(48px, 7.5vw, 96px); font-weight: 650; letter-spacing: -.075em; line-height: .94; }
+    h1 span { color: var(--lime); }
+    .hero-copy { max-width: 600px; margin: 0; color: rgba(255,255,255,.72); font-size: clamp(15px, 1.55vw, 18px); line-height: 1.7; }
+    .hero-note { margin: 13px 0 0; color: rgba(255,255,255,.46); font-size: 12px; line-height: 1.6; }
+    .hero-actions { display: flex; flex-wrap: wrap; gap: 11px; margin-top: 30px; }
+    .button { min-height: 46px; display: inline-flex; align-items: center; justify-content: center; gap: 9px; border: 1px solid transparent; border-radius: 999px; padding: 0 18px; font-size: 12px; font-weight: 750; text-decoration: none; cursor: pointer; transition: transform .2s ease, background .2s ease, border-color .2s ease; }
+    .button:hover { transform: translateY(-2px); }
+    .button-primary { background: var(--lime); color: var(--ink); }
+    .button-primary:hover { background: #e0ff8c; }
+    .button-quiet { background: transparent; border-color: rgba(255,255,255,.24); color: var(--white); }
+    .button-quiet:hover { border-color: var(--lime); }
+    .hero-art { min-height: 350px; position: relative; display: grid; place-items: center; }
+    .art-orbit { position: absolute; width: min(100%, 380px); aspect-ratio: 1; border: 1px solid rgba(255,255,255,.11); border-radius: 50%; }
+    .art-orbit::before, .art-orbit::after { content: ""; position: absolute; border: 1px solid rgba(255,255,255,.1); border-radius: 50%; }
+    .art-orbit::before { inset: 10%; }
+    .art-orbit::after { inset: 23%; }
+    .helix { z-index: 1; width: min(100%, 360px); height: auto; overflow: visible; filter: drop-shadow(0 0 22px rgba(184,168,255,.14)); }
+    .helix .strand-a { fill: none; stroke: var(--lime); stroke-width: 3; }
+    .helix .strand-b { fill: none; stroke: var(--violet); stroke-width: 3; }
+    .helix .rung { stroke: rgba(255,255,255,.35); stroke-width: 1.5; }
+    .helix .node { fill: var(--white); }
+    .helix .node-lime { fill: var(--lime); }
+    .helix .node-violet { fill: var(--violet); }
+    .art-caption { position: absolute; right: 0; bottom: 12px; width: 132px; padding: 13px 14px; border: 1px solid rgba(255,255,255,.16); border-radius: 13px; background: rgba(26,39,41,.8); backdrop-filter: blur(10px); }
+    .art-caption strong { display: block; color: var(--lime); font-size: 10px; letter-spacing: .12em; text-transform: uppercase; }
+    .art-caption span { display: block; margin-top: 6px; color: rgba(255,255,255,.65); font-size: 11px; line-height: 1.5; }
+    .trust-row { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 38px; }
+    .trust-pill { padding: 8px 11px; border: 1px solid rgba(255,255,255,.14); border-radius: 999px; color: rgba(255,255,255,.64); font-size: 10px; letter-spacing: .06em; }
+    .trust-pill b { color: var(--mint); margin-right: 5px; }
+
+    .section { padding: clamp(64px, 9vw, 112px) 0; }
+    .section-head { display: flex; justify-content: space-between; align-items: end; gap: 25px; margin-bottom: 33px; }
+    .section-head h2 { max-width: 650px; margin: 10px 0 0; font-size: clamp(34px, 5vw, 58px); letter-spacing: -.065em; line-height: 1; font-weight: 640; }
+    .section-head p { max-width: 365px; margin: 0; color: var(--muted); font-size: 13px; line-height: 1.75; }
+    .kicker { color: #707979; font-size: 10px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+
+    .calculator-section { background: var(--paper); }
+    .calc-layout { display: grid; grid-template-columns: minmax(300px, .85fr) minmax(0, 1.15fr); gap: 18px; align-items: stretch; }
+    .calc-card { position: relative; overflow: hidden; min-height: 450px; padding: clamp(24px, 4vw, 38px); border-radius: var(--radius); background: var(--lime); box-shadow: var(--shadow); }
+    .calc-card::after { content: "BMI"; position: absolute; right: -12px; bottom: -37px; color: rgba(17,26,29,.065); font-size: 132px; font-weight: 900; letter-spacing: -.1em; pointer-events: none; }
+    .calc-card > * { position: relative; z-index: 1; }
+    .card-label { display: flex; align-items: center; gap: 8px; color: rgba(17,26,29,.65); font-size: 10px; font-weight: 850; letter-spacing: .15em; text-transform: uppercase; }
+    .card-label .dot { width: 7px; height: 7px; border-radius: 50%; background: var(--ink); }
+    .calc-card h3 { margin: 22px 0 8px; font-size: 30px; letter-spacing: -.055em; line-height: 1.05; }
+    .calc-intro { margin: 0; color: rgba(17,26,29,.66); font-size: 12px; line-height: 1.65; }
+    .input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; margin-top: 25px; }
+    .field label { display: block; margin-bottom: 7px; color: rgba(17,26,29,.68); font-size: 10px; font-weight: 800; letter-spacing: .1em; text-transform: uppercase; }
+    .input-wrap { display: flex; align-items: center; gap: 7px; min-height: 52px; padding: 0 13px; border: 1px solid rgba(17,26,29,.26); border-radius: 12px; background: rgba(255,255,255,.49); transition: border-color .2s ease, background .2s ease, box-shadow .2s ease; }
+    .input-wrap:focus-within { background: var(--white); border-color: var(--ink); box-shadow: 0 0 0 3px rgba(17,26,29,.09); }
+    .input-wrap input { width: 100%; min-width: 0; padding: 12px 0; border: 0; outline: 0; background: transparent; color: var(--ink); font-size: 17px; font-weight: 700; }
+    .input-wrap input::placeholder { color: rgba(17,26,29,.35); font-weight: 500; }
+    .unit { color: rgba(17,26,29,.58); font-size: 11px; font-weight: 750; }
+    .calc-actions { display: flex; gap: 9px; margin-top: 15px; }
+    .calc-actions .button { min-height: 43px; }
+    .calc-submit { background: var(--ink); color: var(--white); }
+    .calc-submit:hover { background: #243335; }
+    .calc-reset { border-color: rgba(17,26,29,.25); color: var(--ink); }
+    .calc-reset:hover { background: rgba(255,255,255,.42); }
+    .calc-message { min-height: 23px; margin: 10px 0 0; color: #772d27; font-size: 11px; line-height: 1.5; }
+    .calc-message:empty { min-height: 0; margin: 0; }
+    .result-panel { margin-top: 17px; padding: 14px 15px; border: 1px solid rgba(17,26,29,.2); border-radius: 14px; background: rgba(255,255,255,.57); }
+    .result-panel[hidden] { display: none; }
+    .result-top { display: flex; justify-content: space-between; align-items: start; gap: 10px; }
+    .result-overline { color: rgba(17,26,29,.59); font-size: 9px; font-weight: 850; letter-spacing: .13em; text-transform: uppercase; }
+    .result-number { margin-top: 3px; font-size: 38px; font-weight: 760; letter-spacing: -.07em; line-height: 1; }
+    .result-stage { padding: 7px 9px; border-radius: 999px; background: var(--ink); color: var(--lime); font-size: 10px; font-weight: 800; white-space: nowrap; }
+    .result-note { margin: 10px 0 0; color: rgba(17,26,29,.7); font-size: 10px; line-height: 1.55; }
+    .calc-disclaimer { position: relative; z-index: 1; max-width: 350px; margin: 16px 0 0; color: rgba(17,26,29,.54); font-size: 10px; line-height: 1.6; }
+    .insight-stack { display: grid; gap: 18px; }
+    .insight-card { min-height: 216px; padding: clamp(22px, 3.3vw, 32px); border: 1px solid var(--line); border-radius: var(--radius); background: var(--white); box-shadow: var(--shadow); }
+    .insight-card.dark { background: var(--ink-2); border-color: var(--ink-2); color: var(--white); }
+    .insight-title { display: flex; justify-content: space-between; align-items: start; gap: 15px; }
+    .insight-title h3 { margin: 0; font-size: 21px; letter-spacing: -.045em; }
+    .index { color: #88918e; font-size: 10px; font-weight: 800; letter-spacing: .12em; }
+    .insight-card.dark .index { color: var(--lime); }
+    .insight-card > p { max-width: 540px; margin: 13px 0 0; color: var(--muted); font-size: 12px; line-height: 1.75; }
+    .insight-card.dark > p { color: rgba(255,255,255,.66); }
+    .mini-points { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 21px; }
+    .mini-point { padding: 11px 12px; border-radius: 12px; background: var(--paper); color: #525d5b; font-size: 10px; line-height: 1.5; }
+    .mini-point strong { display: block; margin-bottom: 3px; color: var(--ink); font-size: 10px; }
+    .insight-card.dark .mini-point { background: rgba(255,255,255,.07); color: rgba(255,255,255,.65); }
+    .insight-card.dark .mini-point strong { color: var(--lime); }
+
+    .boundary-strip { padding: 25px 0; background: var(--paper-2); }
+    .boundary-inner { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 24px; }
+    .boundary-item { display: flex; gap: 13px; align-items: start; }
+    .boundary-symbol { flex: 0 0 28px; display: grid; place-items: center; width: 28px; height: 28px; border-radius: 9px; background: var(--ink); color: var(--lime); font-size: 12px; font-weight: 800; }
+    .boundary-item strong { display: block; font-size: 11px; }
+    .boundary-item span { display: block; margin-top: 3px; color: var(--muted); font-size: 10px; line-height: 1.5; }
+    .boundary-divider { width: 1px; height: 45px; background: var(--line); }
+
+    .guide-section { background: var(--white); }
+    .guide-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(260px, .75fr); gap: 18px; align-items: stretch; }
+    .tech-board { padding: clamp(22px, 3.8vw, 36px); border-radius: var(--radius); background: var(--paper); }
+    .tech-board-top { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 18px; }
+    .tech-board-top h3 { margin: 0; font-size: 18px; letter-spacing: -.04em; }
+    .local-only { padding: 7px 9px; border: 1px solid var(--line); border-radius: 999px; color: #697371; font-size: 9px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; }
+    .tech-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 9px; }
+    .tech-button { min-height: 110px; position: relative; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; align-items: start; padding: 13px; border: 1px solid var(--line); border-radius: 14px; background: var(--white); color: var(--ink); text-align: left; cursor: pointer; transition: transform .2s ease, border-color .2s ease, background .2s ease; }
+    .tech-button:hover { transform: translateY(-2px); border-color: #9aa49b; }
+    .tech-button[aria-pressed="true"] { border-color: var(--ink); background: var(--ink); color: var(--white); box-shadow: 0 10px 22px rgba(17,26,29,.12); }
+    .tech-number { color: #8d9692; font-size: 9px; font-weight: 800; letter-spacing: .12em; }
+    .tech-button[aria-pressed="true"] .tech-number { color: var(--lime); }
+    .tech-name { max-width: 145px; font-size: 12px; font-weight: 780; line-height: 1.35; letter-spacing: -.015em; }
+    .tech-kind { margin-top: 5px; color: #76807d; font-size: 9px; }
+    .tech-button[aria-pressed="true"] .tech-kind { color: rgba(255,255,255,.62); }
+    .tech-detail { min-height: 100%; display: flex; flex-direction: column; padding: clamp(23px, 3.8vw, 36px); border-radius: var(--radius); background: var(--ink); color: var(--white); }
+    .detail-kicker { color: var(--lime); font-size: 9px; font-weight: 850; letter-spacing: .15em; text-transform: uppercase; }
+    .tech-detail h3 { margin: 17px 0 12px; font-size: clamp(24px, 3vw, 34px); line-height: 1.05; letter-spacing: -.06em; }
+    .tech-detail p { margin: 0; color: rgba(255,255,255,.68); font-size: 12px; line-height: 1.75; }
+    .detail-rule { height: 1px; margin: 22px 0 17px; background: rgba(255,255,255,.15); }
+    .detail-bottom { margin-top: auto; }
+    .detail-label { color: #aeb8b5; font-size: 9px; font-weight: 850; letter-spacing: .13em; text-transform: uppercase; }
+    .tech-detail .detail-bottom p { margin-top: 7px; color: var(--lime); font-size: 11px; }
+    .tech-foot { margin: 15px 0 0; color: #727c79; font-size: 10px; line-height: 1.6; }
+
+    .workflow-section { background: var(--paper-2); }
+    .workflow-card { padding: clamp(24px, 4vw, 40px); border-radius: var(--radius); background: var(--ink); color: var(--white); }
+    .workflow-title { display: flex; justify-content: space-between; align-items: end; gap: 24px; margin-bottom: 30px; }
+    .workflow-title h2 { max-width: 600px; margin: 9px 0 0; font-size: clamp(31px, 4vw, 48px); letter-spacing: -.065em; line-height: 1; }
+    .workflow-title p { max-width: 325px; margin: 0; color: rgba(255,255,255,.6); font-size: 11px; line-height: 1.7; }
+    .steps { display: grid; grid-template-columns: repeat(5, 1fr); gap: 9px; }
+    .step { min-height: 160px; position: relative; padding: 17px 15px; border: 1px solid rgba(255,255,255,.14); border-radius: 15px; background: rgba(255,255,255,.035); }
+    .step:not(:last-child)::after { content: "→"; position: absolute; z-index: 1; right: -13px; top: 21px; display: grid; place-items: center; width: 25px; height: 25px; border-radius: 50%; background: var(--lime); color: var(--ink); font-size: 13px; font-weight: 900; }
+    .step-no { color: var(--lime); font-size: 9px; font-weight: 850; letter-spacing: .13em; }
+    .step h3 { margin: 25px 0 8px; font-size: 14px; letter-spacing: -.03em; }
+    .step p { margin: 0; color: rgba(255,255,255,.56); font-size: 10px; line-height: 1.6; }
+    .workflow-foot { display: flex; align-items: center; gap: 10px; margin-top: 20px; color: rgba(255,255,255,.49); font-size: 10px; line-height: 1.55; }
+    .workflow-foot span { color: var(--coral); font-size: 15px; }
+
+    .myth-section { background: var(--paper); }
+    .myth-layout { display: grid; grid-template-columns: minmax(230px, .72fr) minmax(0, 1.28fr); gap: 18px; }
+    .myth-intro { padding: 30px; border-radius: var(--radius); background: var(--violet); }
+    .myth-intro .kicker { color: rgba(17,26,29,.65); }
+    .myth-intro h3 { margin: 18px 0 11px; font-size: 30px; line-height: 1; letter-spacing: -.06em; }
+    .myth-intro p { margin: 0; color: rgba(17,26,29,.68); font-size: 12px; line-height: 1.7; }
+    .myth-number { margin-top: 36px; color: rgba(17,26,29,.52); font-size: 10px; font-weight: 800; letter-spacing: .11em; text-transform: uppercase; }
+    .myth-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    .myth-card { padding: 20px; border: 1px solid var(--line); border-radius: 17px; background: var(--white); }
+    .myth-card .myth-index { color: #8b9491; font-size: 9px; font-weight: 850; letter-spacing: .13em; }
+    .myth-card h4 { margin: 17px 0 7px; font-size: 15px; letter-spacing: -.035em; }
+    .myth-card p { margin: 0; color: var(--muted); font-size: 10px; line-height: 1.65; }
+    .myth-card:last-child { background: var(--ink-2); border-color: var(--ink-2); color: var(--white); }
+    .myth-card:last-child p { color: rgba(255,255,255,.61); }
+    .myth-card:last-child .myth-index { color: var(--lime); }
+
+    .learn-section { background: var(--white); }
+    .learn-layout { display: grid; grid-template-columns: minmax(0, .85fr) minmax(320px, 1.15fr); gap: 18px; }
+    .learn-questions { display: grid; gap: 8px; align-content: start; }
+    .question-button { display: flex; align-items: center; justify-content: space-between; gap: 15px; width: 100%; padding: 14px 16px; border: 1px solid var(--line); border-radius: 12px; background: transparent; color: var(--ink); text-align: left; font-size: 11px; font-weight: 720; cursor: pointer; transition: background .2s ease, color .2s ease, border .2s ease; }
+    .question-button::after { content: "+"; color: #71807a; font-size: 18px; font-weight: 400; }
+    .question-button:hover, .question-button[aria-pressed="true"] { border-color: var(--ink); background: var(--ink); color: var(--white); }
+    .question-button[aria-pressed="true"]::after { color: var(--lime); content: "↗"; }
+    .answer-card { min-height: 260px; padding: clamp(23px, 3.5vw, 34px); border-radius: var(--radius); background: var(--paper); }
+    .answer-label { color: #717c78; font-size: 9px; font-weight: 850; letter-spacing: .15em; text-transform: uppercase; }
+    .answer-card h3 { max-width: 520px; margin: 15px 0 12px; font-size: clamp(24px, 3vw, 34px); letter-spacing: -.06em; line-height: 1.05; }
+    .answer-card p { max-width: 650px; margin: 0; color: #606b68; font-size: 12px; line-height: 1.8; }
+    .answer-foot { display: inline-flex; align-items: center; gap: 7px; margin-top: 22px; padding: 8px 10px; border-radius: 999px; background: var(--white); color: #64706d; font-size: 9px; font-weight: 750; }
+    .answer-foot::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #80b4a3; }
+
+    .sources-section { background: var(--paper-2); padding: 42px 0 48px; }
+    .sources-head { display: flex; justify-content: space-between; gap: 20px; align-items: center; padding-bottom: 18px; border-bottom: 1px solid var(--line); }
+    .sources-head h2 { margin: 0; font-size: 17px; letter-spacing: -.04em; }
+    .sources-head p { margin: 0; color: var(--muted); font-size: 10px; }
+    .source-list { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding-top: 17px; }
+    .source-link { display: flex; align-items: start; gap: 9px; min-height: 57px; padding: 11px; border: 1px solid rgba(17,26,29,.13); border-radius: 11px; color: #53605d; font-size: 10px; line-height: 1.5; text-decoration: none; transition: background .2s ease, border .2s ease; }
+    .source-link:hover { background: var(--white); border-color: rgba(17,26,29,.35); }
+    .source-link span { flex: 0 0 auto; color: #79837f; font-size: 9px; font-weight: 850; }
+    .source-caveat { margin: 16px 0 0; color: #77817e; font-size: 9px; line-height: 1.6; }
+
+    footer { padding: 24px 0; background: var(--ink); color: rgba(255,255,255,.58); }
+    .footer-inner { display: flex; justify-content: space-between; align-items: center; gap: 20px; }
+    .footer-brand { color: var(--white); font-size: 10px; font-weight: 850; letter-spacing: .12em; text-transform: uppercase; }
+    .footer-note { max-width: 580px; margin: 0; font-size: 9px; line-height: 1.6; text-align: right; }
+    :focus-visible { outline: 3px solid #6e55ff; outline-offset: 3px; }
+    .topbar :focus-visible, .hero :focus-visible, .workflow-card :focus-visible, footer :focus-visible { outline-color: var(--lime); }
+
+    @media (max-width: 860px) {
+      .hero-grid { grid-template-columns: minmax(0, 1.1fr) minmax(210px, .7fr); gap: 20px; }
+      .hero-art { min-height: 290px; }
+      .calc-layout { grid-template-columns: minmax(280px, .9fr) minmax(0, 1.1fr); }
+      .steps { grid-template-columns: repeat(5, minmax(125px, 1fr)); overflow-x: auto; padding: 0 2px 8px; }
+      .source-list { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 680px) {
+      .shell { width: min(100% - 30px, 540px); }
+      .topbar-inner { min-height: 64px; }
+      .topnav { display: none; }
+      .hero { padding: 55px 0 45px; }
+      .hero-grid { grid-template-columns: 1fr; }
+      .hero-art { min-height: 230px; margin: -2px 0 0; }
+      .art-orbit { width: 245px; }
+      .helix { width: 245px; }
+      .art-caption { right: 2px; bottom: 3px; }
+      .trust-row { margin-top: 25px; }
+      .section-head { display: block; }
+      .section-head p { margin-top: 17px; }
+      .calc-layout, .guide-grid, .myth-layout, .learn-layout { grid-template-columns: 1fr; }
+      .calc-card { min-height: 0; }
+      .insight-card { min-height: 0; }
+      .boundary-inner { grid-template-columns: 1fr; gap: 18px; }
+      .boundary-divider { width: 100%; height: 1px; }
+      .tech-grid { grid-template-columns: repeat(2, minmax(0,1fr)); }
+      .tech-detail { min-height: 285px; }
+      .workflow-title { display: block; }
+      .workflow-title p { margin-top: 15px; }
+      .myth-cards { grid-template-columns: 1fr 1fr; }
+      .answer-card { min-height: 220px; }
+      .sources-head { display: block; }
+      .sources-head p { margin-top: 7px; }
+      .footer-inner { display: block; }
+      .footer-note { margin-top: 10px; text-align: left; }
+    }
+    @media (max-width: 390px) {
+      .input-grid { grid-template-columns: 1fr; }
+      .myth-cards { grid-template-columns: 1fr; }
+      .source-list { grid-template-columns: 1fr; }
+      .tech-name { font-size: 11px; }
+      .trust-pill { font-size: 9px; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="topbar">
+    <div class="shell topbar-inner">
+      <a class="brand" href="#top" aria-label="BMI Beyond home">
+        <span class="brand-mark">B/+</span><span>BMI / Beyond</span>
+      </a>
+      <nav class="topnav" aria-label="Main navigation">
+        <a href="#calculator">BMI calculator</a>
+        <a href="#dna-ai">DNA + AI map</a>
+        <a href="#limits">The limits</a>
+      </nav>
+      <span class="nav-tag">Field guide · 01</span>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="hero" id="top">
+      <div class="shell hero-grid">
+        <div>
+          <div class="eyebrow">A clear-eyed guide to body data</div>
+          <h1>BMI is a number.<br><span>Your biology is a story.</span></h1>
+          <p class="hero-copy">Start with two measurements. Then discover what DNA science and AI can explore — and where responsible health insight needs much more context.</p>
+          <p class="hero-note">Height and mass can calculate BMI. They cannot reveal your DNA or predict every disease, symptom, or pain.</p>
+          <div class="hero-actions">
+            <a class="button button-primary" href="#calculator">Calculate BMI <span aria-hidden="true">↘</span></a>
+            <a class="button button-quiet" href="#dna-ai">Explore DNA + AI <span aria-hidden="true">↘</span></a>
+          </div>
+          <div class="trust-row" aria-label="Privacy and evidence notes">
+            <span class="trust-pill"><b>●</b> One HTML file</span>
+            <span class="trust-pill"><b>●</b> Works offline</span>
+            <span class="trust-pill"><b>●</b> No DNA upload</span>
+            <span class="trust-pill"><b>●</b> No API calls</span>
+          </div>
+        </div>
+        <div class="hero-art" aria-label="Decorative DNA double helix illustration">
+          <div class="art-orbit" aria-hidden="true"></div>
+          <svg class="helix" viewBox="0 0 320 360" role="img" aria-labelledby="helixTitle helixDesc">
+            <title id="helixTitle">Stylized DNA double helix</title>
+            <desc id="helixDesc">Two colored strands connected by data-like rungs.</desc>
+            <path class="strand-a" d="M87 18 C235 54 235 108 87 145 C-60 182 -60 236 87 272 C235 308 235 340 116 354"/>
+            <path class="strand-b" d="M233 18 C85 54 85 108 233 145 C380 182 380 236 233 272 C85 308 85 340 204 354"/>
+            <g class="rung">
+              <line x1="103" y1="24" x2="217" y2="24"/><line x1="153" y1="41" x2="167" y2="41"/>
+              <line x1="205" y1="61" x2="115" y2="61"/><line x1="229" y1="82" x2="91" y2="82"/>
+              <line x1="225" y1="103" x2="95" y2="103"/><line x1="191" y1="124" x2="129" y2="124"/>
+              <line x1="110" y1="151" x2="210" y2="151"/><line x1="58" y1="170" x2="262" y2="170"/>
+              <line x1="37" y1="191" x2="283" y2="191"/><line x1="56" y1="212" x2="264" y2="212"/>
+              <line x1="104" y1="233" x2="216" y2="233"/><line x1="156" y1="255" x2="164" y2="255"/>
+              <line x1="204" y1="280" x2="116" y2="280"/><line x1="229" y1="301" x2="91" y2="301"/>
+              <line x1="210" y1="322" x2="110" y2="322"/><line x1="166" y1="342" x2="154" y2="342"/>
+            </g>
+            <g>
+              <circle class="node-lime" cx="103" cy="24" r="5"/><circle class="node-violet" cx="217" cy="24" r="5"/>
+              <circle class="node-lime" cx="205" cy="61" r="4"/><circle class="node-violet" cx="115" cy="61" r="4"/>
+              <circle class="node-lime" cx="37" cy="191" r="5"/><circle class="node-violet" cx="283" cy="191" r="5"/>
+              <circle class="node-lime" cx="204" cy="280" r="4"/><circle class="node-violet" cx="116" cy="280" r="4"/>
+              <circle class="node" cx="110" cy="322" r="4"/><circle class="node" cx="210" cy="322" r="4"/>
+            </g>
+          </svg>
+          <div class="art-caption"><strong>DNA × AI</strong><span>Patterns are clues. Context gives them meaning.</span></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section calculator-section" id="calculator">
+      <div class="shell">
+        <div class="section-head">
+          <div><div class="kicker">01 — Your starting point</div><h2>Two numbers.<br>A useful first signal.</h2></div>
+          <p>BMI is weight relative to height. It is quick to calculate, but it is only one screening measure — not a complete picture of health.</p>
+        </div>
+        <div class="calc-layout">
+          <div class="calc-card">
+            <div class="card-label"><span class="dot"></span> Local BMI calculator</div>
+            <h3>Find your<br>BMI number.</h3>
+            <p class="calc-intro">Enter height and weight. The calculation happens in this page and is not saved.</p>
+            <form id="bmiForm" novalidate>
+              <div class="input-grid">
+                <div class="field">
+                  <label for="height">Height</label>
+                  <div class="input-wrap"><input id="height" name="height" type="number" inputmode="decimal" min="1" step="any" placeholder="170" autocomplete="off" aria-describedby="calcMessage"><span class="unit">cm</span></div>
+                </div>
+                <div class="field">
+                  <label for="weight">Weight</label>
+                  <div class="input-wrap"><input id="weight" name="weight" type="number" inputmode="decimal" min="1" step="any" placeholder="65" autocomplete="off" aria-describedby="calcMessage"><span class="unit">kg</span></div>
+                </div>
+              </div>
+              <div class="calc-actions">
+                <button class="button calc-submit" type="submit">Calculate <span aria-hidden="true">↗</span></button>
+                <button class="button calc-reset" id="resetButton" type="reset">Clear</button>
+              </div>
+              <p class="calc-message" id="calcMessage" role="status" aria-live="polite"></p>
+            </form>
+            <div class="result-panel" id="resultPanel" aria-live="polite" hidden>
+              <div class="result-top"><div><div class="result-overline">Body mass index</div><div class="result-number" id="bmiValue">—</div></div><span class="result-stage" id="bmiStage">—</span></div>
+              <p class="result-note" id="resultNote"></p>
+            </div>
+            <p class="calc-disclaimer">Adult reference categories shown: Korean Society for the Study of Obesity. For people under 20, BMI is interpreted using age- and sex-based growth charts.</p>
+          </div>
+          <div class="insight-stack">
+            <article class="insight-card">
+              <div class="insight-title"><h3>What BMI can do</h3><span class="index">A / SCREEN</span></div>
+              <p>Give a fast height-to-weight calculation and a broad screening category. It can be one starting point for a conversation that includes other health information.</p>
+              <div class="mini-points">
+                <div class="mini-point"><strong>Measure</strong>Weight relative to height</div>
+                <div class="mini-point"><strong>Compare</strong>With a chosen adult reference range</div>
+              </div>
+            </article>
+            <article class="insight-card dark">
+              <div class="insight-title"><h3>What BMI cannot do</h3><span class="index">B / BOUNDARY</span></div>
+              <p>Two measurements cannot reveal genes, diagnose a condition, explain pain, or forecast every future health outcome.</p>
+              <div class="mini-points">
+                <div class="mini-point"><strong>Not DNA</strong>BMI contains no genetic information</div>
+                <div class="mini-point"><strong>Not a diagnosis</strong>Symptoms need their own assessment</div>
+              </div>
+            </article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="boundary-strip" aria-label="Important distinction">
+      <div class="shell boundary-inner">
+        <div class="boundary-item"><span class="boundary-symbol" aria-hidden="true">=</span><div><strong>BMI is a calculation.</strong><span>Weight in kilograms ÷ height in meters squared.</span></div></div>
+        <div class="boundary-divider" aria-hidden="true"></div>
+        <div class="boundary-item"><span class="boundary-symbol" aria-hidden="true">≠</span><div><strong>BMI is not a body scan.</strong><span>It does not separate fat, muscle, or bone.</span></div></div>
+      </div>
+    </div>
+
+    <section class="section guide-section" id="dna-ai">
+      <div class="shell">
+        <div class="section-head">
+          <div><div class="kicker">02 — The discovery map</div><h2>DNA science has<br>more than one lens.</h2></div>
+          <p>AI can help researchers find patterns in complex biological data. Choose a topic to see what it studies — and what it cannot claim.</p>
+        </div>
+        <div class="guide-grid">
+          <div>
+            <div class="tech-board">
+              <div class="tech-board-top"><h3>Explore the toolkit</h3><span class="local-only">Interactive · Runs here</span></div>
+              <div class="tech-grid" role="group" aria-label="DNA and AI technologies">
+                <button class="tech-button" type="button" data-tech="sequence" aria-pressed="true"><span class="tech-number">01 / READ</span><span><span class="tech-name">Sequencing & genotyping</span><span class="tech-kind">Measure DNA variation</span></span></button>
+                <button class="tech-button" type="button" data-tech="gwas" aria-pressed="false"><span class="tech-number">02 / COMPARE</span><span><span class="tech-name">GWAS</span><span class="tech-kind">Find population links</span></span></button>
+                <button class="tech-button" type="button" data-tech="prs" aria-pressed="false"><span class="tech-number">03 / ESTIMATE</span><span><span class="tech-name">Polygenic scores</span><span class="tech-kind">Combine many variants</span></span></button>
+                <button class="tech-button" type="button" data-tech="variant" aria-pressed="false"><span class="tech-number">04 / INTERPRET</span><span><span class="tech-name">Variant analysis</span><span class="tech-kind">Prioritize evidence</span></span></button>
+                <button class="tech-button" type="button" data-tech="omics" aria-pressed="false"><span class="tech-number">05 / OBSERVE</span><span><span class="tech-name">Functional & single-cell omics</span><span class="tech-kind">Study active biology</span></span></button>
+                <button class="tech-button" type="button" data-tech="pharma" aria-pressed="false"><span class="tech-number">06 / RESPOND</span><span><span class="tech-name">Pharmacogenomics</span><span class="tech-kind">Genes and medicines</span></span></button>
+                <button class="tech-button" type="button" data-tech="protein" aria-pressed="false"><span class="tech-number">07 / MODEL</span><span><span class="tech-name">Protein structure AI</span><span class="tech-kind">Generate testable ideas</span></span></button>
+                <button class="tech-button" type="button" data-tech="edit" aria-pressed="false"><span class="tech-number">08 / ENGINEER</span><span><span class="tech-name">CRISPR & gene editing</span><span class="tech-kind">Change DNA in a system</span></span></button>
+                <button class="tech-button" type="button" data-tech="multi" aria-pressed="false"><span class="tech-number">09 / INTEGRATE</span><span><span class="tech-name">Multi-omics AI</span><span class="tech-kind">Connect layers of data</span></span></button>
+              </div>
+            </div>
+            <p class="tech-foot">This is a curated introduction to major areas, not a complete list of every method. Research changes quickly, and a model result needs validation.</p>
+          </div>
+          <article class="tech-detail" aria-live="polite" aria-atomic="true">
+            <div class="detail-kicker" id="detailKicker">01 / Read</div>
+            <h3 id="detailTitle">Sequencing & genotyping</h3>
+            <p id="detailText">Sequencing reads the order of DNA letters; genotyping checks selected known variants. These methods create molecular data that researchers can analyze.</p>
+            <div class="detail-rule"></div>
+            <div class="detail-bottom"><div class="detail-label">Keep in mind</div><p id="detailLimit">A measurement is not a diagnosis. Results need quality checks and interpretation for the specific person and question.</p></div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section workflow-section">
+      <div class="shell">
+        <div class="workflow-card">
+          <div class="workflow-title"><div><div class="eyebrow">How responsible discovery works</div><h2>From biological data<br>to a careful question.</h2></div><p>AI can support steps in research. It does not turn a BMI result into a genome, a diagnosis, or a complete forecast.</p></div>
+          <div class="steps" aria-label="A simplified research workflow">
+            <article class="step"><div class="step-no">STEP 01</div><h3>Collect</h3><p>Use an appropriate sample or measurement with clear consent and purpose.</p></article>
+            <article class="step"><div class="step-no">STEP 02</div><h3>Check</h3><p>Review data quality, missingness, and whether the dataset fits the question.</p></article>
+            <article class="step"><div class="step-no">STEP 03</div><h3>Model</h3><p>Use statistics or AI to find patterns and rank hypotheses.</p></article>
+            <article class="step"><div class="step-no">STEP 04</div><h3>Validate</h3><p>Test findings in appropriate samples, settings, and populations.</p></article>
+            <article class="step"><div class="step-no">STEP 05</div><h3>Interpret</h3><p>Combine evidence with clinical context and expert judgment.</p></article>
+          </div>
+          <div class="workflow-foot"><span aria-hidden="true">✳</span><div>Prediction is not certainty. Research models can reflect gaps or bias in the data used to build them.</div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section myth-section" id="limits">
+      <div class="shell">
+        <div class="section-head">
+          <div><div class="kicker">03 — The honest boundary</div><h2>More data can help.<br>It still has limits.</h2></div>
+          <p>Health is shaped by biology, environment, time, and chance. No single score or AI system captures every cause of disease or pain.</p>
+        </div>
+        <div class="myth-layout">
+          <article class="myth-intro">
+            <div class="kicker">A better question</div>
+            <h3>What evidence<br>do we actually have?</h3>
+            <p>Good science states what was measured, who the evidence applies to, how uncertain it is, and what would need follow-up.</p>
+            <div class="myth-number">Not a crystal ball · A map of evidence</div>
+          </article>
+          <div class="myth-cards">
+            <article class="myth-card"><div class="myth-index">01 / BODY</div><h4>Same BMI, different bodies</h4><p>Muscle, bone, fat distribution, age, and other factors are not visible in the BMI number.</p></article>
+            <article class="myth-card"><div class="myth-index">02 / DNA</div><h4>Genes are not destiny</h4><p>Many common traits involve many variants and non-genetic influences. A score gives a limited statistical view.</p></article>
+            <article class="myth-card"><div class="myth-index">03 / AI</div><h4>Patterns need proof</h4><p>A model may find a signal in its training data. Independent validation is needed before real-world use.</p></article>
+            <article class="myth-card"><div class="myth-index">04 / PRIVACY</div><h4>DNA is personal data</h4><p>Genomic information can have implications for relatives too. Consent, access, storage, and sharing matter.</p></article>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section learn-section" id="learn">
+      <div class="shell">
+        <div class="section-head">
+          <div><div class="kicker">04 — Learn in a minute</div><h2>Curiosity, with guardrails.</h2></div>
+          <p>Tap a prompt for a short explainer. These evidence-based notes run locally; there is no chatbot or personal health prediction.</p>
+        </div>
+        <div class="learn-layout">
+          <div class="learn-questions" role="group" aria-label="Choose a learning prompt">
+            <button class="question-button" type="button" data-question="bmi" aria-pressed="true">Can BMI explain a pain?</button>
+            <button class="question-button" type="button" data-question="dna">Can BMI tell me my DNA?</button>
+            <button class="question-button" type="button" data-question="score">What is a polygenic score?</button>
+            <button class="question-button" type="button" data-question="ai">What does AI add to genomics?</button>
+            <button class="question-button" type="button" data-question="privacy">Why does DNA privacy matter?</button>
+          </div>
+          <article class="answer-card" aria-live="polite" aria-atomic="true">
+            <div class="answer-label">Quick explainer · Local content</div>
+            <h3 id="answerTitle">Can BMI explain a pain?</h3>
+            <p id="answerText">No. BMI is a height-and-weight calculation, not a pain assessment. Pain can have many causes. A new, severe, persistent, or worrying symptom needs assessment based on the symptom and the person’s circumstances.</p>
+            <span class="answer-foot">Educational information · Not a diagnosis</span>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="sources-section" id="sources">
+      <div class="shell">
+        <div class="sources-head"><h2>Start with the evidence.</h2><p>References open online; the page itself has no external dependencies.</p></div>
+        <div class="source-list">
+          <a class="source-link" href="https://www.cdc.gov/BMI/about/index.html" target="_blank" rel="noopener noreferrer"><span>01</span>CDC · What BMI measures and its limits</a>
+          <a class="source-link" href="https://general.kosso.or.kr/html/user/core/view/reaction/main/kosso/inc/data/guideline2022_vol8.pdf" target="_blank" rel="noopener noreferrer"><span>02</span>KSSO · Korean adult obesity guideline (2022)</a>
+          <a class="source-link" href="https://www.genome.gov/about-genomics/educational-resources/fact-sheets/artificial-intelligence-machine-learning-and-genomics" target="_blank" rel="noopener noreferrer"><span>03</span>NHGRI · AI, machine learning, and genomics</a>
+          <a class="source-link" href="https://www.genome.gov/genetics-glossary/Polygenic-Risk-Score-PRS" target="_blank" rel="noopener noreferrer"><span>04</span>NHGRI · Polygenic risk scores</a>
+          <a class="source-link" href="https://www.genome.gov/about-genomics/policy-issues/Privacy" target="_blank" rel="noopener noreferrer"><span>05</span>NHGRI · Privacy in genomics</a>
+          <a class="source-link" href="https://www.cdc.gov/bmi/faq/index.html" target="_blank" rel="noopener noreferrer"><span>06</span>CDC · BMI questions and answers</a>
+        </div>
+        <p class="source-caveat">BMI categories vary by population and age. This page uses the adult Korean reference shown in the cited KSSO guideline. Children and teens need age- and sex-specific interpretation. Sources are educational references, not personal medical advice.</p>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="shell footer-inner"><div class="footer-brand">BMI / Beyond · Version 04</div><p class="footer-note">A self-contained educational page. BMI is a screening measure. This page does not read DNA, call an AI service, save measurements, diagnose disease, or predict pain.</p></div>
+  </footer>
+
+  <script>
+    (() => {
+      const form = document.getElementById('bmiForm');
+      const heightInput = document.getElementById('height');
+      const weightInput = document.getElementById('weight');
+      const message = document.getElementById('calcMessage');
+      const resultPanel = document.getElementById('resultPanel');
+      const bmiValue = document.getElementById('bmiValue');
+      const bmiStage = document.getElementById('bmiStage');
+      const resultNote = document.getElementById('resultNote');
+
+      function getStage(bmi) {
+        if (bmi < 18.5) return { label: 'Underweight', note: 'Below the adult reference range shown here. BMI alone does not explain why.' };
+        if (bmi < 23) return { label: 'Normal range', note: 'Within the adult Korean reference range shown here. BMI alone does not measure overall health.' };
+        if (bmi < 25) return { label: 'Pre-obesity', note: 'KSSO adult reference category. This is a screening label, not an individual diagnosis.' };
+        if (bmi < 30) return { label: 'Obesity · Class 1', note: 'KSSO adult reference category. Consider BMI as one measure alongside appropriate clinical context.' };
+        if (bmi < 35) return { label: 'Obesity · Class 2', note: 'KSSO adult reference category. This number alone cannot diagnose a condition or predict an outcome.' };
+        return { label: 'Obesity · Class 3', note: 'KSSO adult reference category. This number alone cannot diagnose a condition or predict an outcome.' };
+      }
+
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const rawHeight = heightInput.value.trim();
+        const rawWeight = weightInput.value.trim();
+        const height = Number(rawHeight);
+        const weight = Number(rawWeight);
+
+        if (!rawHeight || !rawWeight || !Number.isFinite(height) || !Number.isFinite(weight) || height <= 0 || weight <= 0) {
+          message.textContent = 'Enter a positive number for both height and weight.';
+          resultPanel.hidden = true;
+          (rawHeight ? weightInput : heightInput).focus();
+          return;
+        }
+
+        const meters = height / 100;
+        const bmi = weight / (meters * meters);
+        if (!Number.isFinite(bmi)) {
+          message.textContent = 'Those values are outside the calculator’s usable range. Please check them.';
+          resultPanel.hidden = true;
+          return;
+        }
+
+        const stage = getStage(bmi);
+        bmiValue.textContent = bmi.toFixed(2);
+        bmiStage.textContent = stage.label;
+        resultNote.textContent = stage.note;
+        message.textContent = 'Calculated in this page. Your measurements are not sent or saved.';
+        resultPanel.hidden = false;
+      });
+
+      form.addEventListener('reset', () => {
+        window.setTimeout(() => {
+          message.textContent = '';
+          resultPanel.hidden = true;
+        }, 0);
+      });
+
+      const techDetails = {
+        sequence: {
+          kicker: '01 / Read', title: 'Sequencing & genotyping',
+          text: 'Sequencing reads the order of DNA letters; genotyping checks selected known variants. These methods create molecular data that researchers can analyze.',
+          limit: 'A measurement is not a diagnosis. Results need quality checks and interpretation for the specific person and question.'
+        },
+        gwas: {
+          kicker: '02 / Compare', title: 'Genome-wide association studies',
+          text: 'GWAS compare genetic variants across groups to find statistical associations with a trait. AI and other computational methods can help sift through large datasets.',
+          limit: 'An association does not by itself prove that a variant causes a trait. Findings depend on study design and who was included.'
+        },
+        prs: {
+          kicker: '03 / Estimate', title: 'Polygenic risk scores',
+          text: 'A PRS combines information from many variants into a statistical estimate of relative genetic risk for a specific condition or trait.',
+          limit: 'It is one limited factor, not a certainty or full health forecast. Performance can vary across ancestry groups and environments.'
+        },
+        variant: {
+          kicker: '04 / Interpret', title: 'Variant analysis',
+          text: 'Computational tools can help prioritize DNA variants for further study by comparing them with biological and clinical evidence.',
+          limit: 'A model’s ranking is a hypothesis. Clinical interpretation requires validated evidence and, when appropriate, professional review.'
+        },
+        omics: {
+          kicker: '05 / Observe', title: 'Functional & single-cell omics',
+          text: 'Researchers measure activity such as RNA expression or chromatin accessibility, sometimes in individual cells. AI can help map patterns across these data.',
+          limit: 'These experiments show biological activity in a sample or setting; they do not directly reveal every process in a whole person.'
+        },
+        pharma: {
+          kicker: '06 / Respond', title: 'Pharmacogenomics',
+          text: 'Pharmacogenomics studies how genetic differences may affect response to particular medicines and can inform selected treatment decisions.',
+          limit: 'It applies only to specific gene–drug questions. Do not start, stop, or change medicine based on a web page or genetic result alone.'
+        },
+        protein: {
+          kicker: '07 / Model', title: 'Protein structure AI',
+          text: 'AI systems can predict possible protein structures or interactions, helping researchers form hypotheses about biological function and disease mechanisms.',
+          limit: 'A predicted structure is a research model. It does not directly predict a person’s symptoms or future health.'
+        },
+        edit: {
+          kicker: '08 / Engineer', title: 'CRISPR & gene editing',
+          text: 'Gene-editing tools can alter DNA in cells or research systems. AI may help researchers design or evaluate components used in experiments.',
+          limit: 'Editing is an intervention, not a way to read someone’s health from BMI. Safety, ethics, and clinical oversight are essential.'
+        },
+        multi: {
+          kicker: '09 / Integrate', title: 'Multi-omics AI',
+          text: 'Researchers combine layers such as DNA, RNA, proteins, and clinical measurements to study how biological systems work together.',
+          limit: 'More data can reveal more patterns, but missing data, bias, privacy, and independent validation still matter.'
+        }
+      };
+
+      document.querySelectorAll('.tech-button').forEach((button) => {
+        button.addEventListener('click', () => {
+          const detail = techDetails[button.dataset.tech];
+          if (!detail) return;
+          document.querySelectorAll('.tech-button').forEach((item) => item.setAttribute('aria-pressed', String(item === button)));
+          document.getElementById('detailKicker').textContent = detail.kicker;
+          document.getElementById('detailTitle').textContent = detail.title;
+          document.getElementById('detailText').textContent = detail.text;
+          document.getElementById('detailLimit').textContent = detail.limit;
+        });
+      });
+
+      const quickAnswers = {
+        bmi: {
+          title: 'Can BMI explain a pain?',
+          text: 'No. BMI is a height-and-weight calculation, not a pain assessment. Pain can have many causes. A new, severe, persistent, or worrying symptom needs assessment based on the symptom and the person’s circumstances.'
+        },
+        dna: {
+          title: 'Can BMI tell me my DNA?',
+          text: 'No. BMI uses height and weight only. It contains no DNA sequence, and it cannot determine which variants a person has or what their genes mean.'
+        },
+        score: {
+          title: 'What is a polygenic score?',
+          text: 'It is a statistical summary of many genetic variants for one studied trait or condition. It estimates relative genetic contribution; it is not a diagnosis, a guarantee, or a complete estimate of someone’s health.'
+        },
+        ai: {
+          title: 'What does AI add to genomics?',
+          text: 'AI can help researchers search large biological datasets for patterns, prioritize candidates, and generate hypotheses. Those results need validation and careful interpretation before they can support a real-world decision.'
+        },
+        privacy: {
+          title: 'Why does DNA privacy matter?',
+          text: 'Genomic data is sensitive and can reveal information relevant to biological relatives. Before sharing it, understand who can access it, how it is stored, whether it may be reused, and what consent covers.'
+        }
+      };
+
+      document.querySelectorAll('.question-button').forEach((button) => {
+        button.addEventListener('click', () => {
+          const answer = quickAnswers[button.dataset.question];
+          if (!answer) return;
+          document.querySelectorAll('.question-button').forEach((item) => item.setAttribute('aria-pressed', String(item === button)));
+          document.getElementById('answerTitle').textContent = answer.title;
+          document.getElementById('answerText').textContent = answer.text;
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
