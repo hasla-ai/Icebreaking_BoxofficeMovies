@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#111a1d">
-  <meta name="description" content="A self-contained BMI calculator and approachable field guide to DNA, AI, and the limits of health prediction.">
+  <meta name="description" content="A one-page BMI, DNA, and AI icebreaker with surprising science stories and low-pressure conversation prompts.">
   <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; script-src 'unsafe-inline'; img-src data:; connect-src 'none'; base-uri 'none'; form-action 'none'">
-  <title>BMI / Beyond — DNA & AI Field Guide</title>
+  <title>BMI / Beyond — Science Ssul Icebreaker</title>
   <style>
     :root {
       color-scheme: light;
@@ -141,6 +141,42 @@
     .boundary-item span { display: block; margin-top: 3px; color: var(--muted); font-size: 10px; line-height: 1.5; }
     .boundary-divider { width: 1px; height: 45px; background: var(--line); }
 
+    .icebreaker-section { background: #e6e1d7; }
+    .story-grid { display: grid; grid-template-columns: repeat(3, minmax(0,1fr)); gap: 13px; }
+    .story-card { min-height: 390px; display: flex; flex-direction: column; align-items: start; padding: clamp(21px, 3vw, 29px); border: 1px solid rgba(17,26,29,.1); border-radius: var(--radius); background: var(--white); box-shadow: 0 14px 34px rgba(17,26,29,.055); }
+    .story-card.dna { background: var(--ink-2); border-color: var(--ink-2); color: var(--white); }
+    .story-card.bodies { background: var(--lime); border-color: var(--lime); }
+    .story-meta { width: 100%; display: flex; justify-content: space-between; gap: 12px; color: #818b86; font-size: 9px; font-weight: 850; letter-spacing: .13em; text-transform: uppercase; }
+    .story-card.dna .story-meta { color: rgba(255,255,255,.54); }
+    .story-card.bodies .story-meta { color: rgba(17,26,29,.58); }
+    .story-art { min-height: 100px; width: 100%; display: flex; align-items: center; gap: 8px; margin: 18px 0 15px; }
+    .story-year { color: var(--ink); font-size: clamp(40px, 5vw, 60px); font-weight: 760; letter-spacing: -.09em; line-height: 1; }
+    .story-year small { display: block; margin-top: 7px; color: #87918d; font-size: 9px; font-weight: 800; letter-spacing: .16em; text-transform: uppercase; }
+    .story-seal { margin-left: auto; display: grid; place-items: center; width: 72px; height: 72px; border: 1px solid rgba(17,26,29,.18); border-radius: 50%; color: #a46e5c; font-size: 21px; transform: rotate(-12deg); }
+    .dna-letter { display: grid; place-items: center; width: 42px; height: 49px; border: 1px solid rgba(255,255,255,.2); border-radius: 12px; color: var(--lime); font-size: 20px; font-weight: 800; }
+    .dna-letter:nth-child(2), .dna-letter:nth-child(4) { transform: translateY(11px); color: var(--violet); }
+    .dna-scale { margin-left: auto; color: rgba(255,255,255,.55); font-size: 8px; font-weight: 750; letter-spacing: .11em; line-height: 1.6; text-align: right; text-transform: uppercase; }
+    .same-number { color: var(--ink); font-size: clamp(24px, 3.1vw, 37px); font-weight: 820; letter-spacing: -.07em; white-space: nowrap; }
+    .same-number small { display: block; margin-top: 4px; color: rgba(17,26,29,.55); font-size: 8px; font-weight: 800; letter-spacing: .12em; text-align: center; text-transform: uppercase; }
+    .same-mark { color: rgba(17,26,29,.48); font-size: 18px; font-weight: 700; }
+    .story-card h3 { margin: 0 0 9px; font-size: 19px; letter-spacing: -.045em; line-height: 1.12; }
+    .story-card p { margin: 0; color: #68716d; font-size: 11px; line-height: 1.72; }
+    .story-card.dna h3 { color: var(--white); }
+    .story-card.dna p { color: rgba(255,255,255,.66); }
+    .story-card.bodies p { color: rgba(17,26,29,.68); }
+    .story-source { display: inline-flex; gap: 6px; margin-top: 12px; color: #7a8580; font-size: 9px; text-decoration-thickness: 1px; text-underline-offset: 3px; }
+    .story-card.dna .story-source { color: var(--violet); }
+    .story-card.bodies .story-source { color: rgba(17,26,29,.61); }
+    .story-prompt-button { margin-top: auto; padding: 11px 0 0; border: 0; background: transparent; color: var(--ink); font-size: 10px; font-weight: 820; cursor: pointer; text-align: left; }
+    .story-prompt-button::after { content: "  ↗"; color: #687570; }
+    .story-card.dna .story-prompt-button { color: var(--lime); }
+    .story-card.dna .story-prompt-button::after { color: var(--lime); }
+    .prompt-deck { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 20px; margin-top: 14px; padding: 19px 22px; border-radius: 17px; background: var(--ink); color: var(--white); }
+    .prompt-deck-label { color: var(--lime); font-size: 9px; font-weight: 850; letter-spacing: .15em; text-transform: uppercase; }
+    .prompt-deck p { max-width: 720px; margin: 6px 0 0; color: rgba(255,255,255,.82); font-size: 14px; line-height: 1.55; }
+    .prompt-deck-note { display: block; margin-top: 5px; color: rgba(255,255,255,.43); font-size: 9px; }
+    .prompt-random { min-width: 122px; background: var(--lime); color: var(--ink); }
+
     .guide-section { background: var(--white); }
     .guide-grid { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(260px, .75fr); gap: 18px; align-items: stretch; }
     .tech-board { padding: clamp(22px, 3.8vw, 36px); border-radius: var(--radius); background: var(--paper); }
@@ -231,6 +267,8 @@
       .hero-grid { grid-template-columns: minmax(0, 1.1fr) minmax(210px, .7fr); gap: 20px; }
       .hero-art { min-height: 290px; }
       .calc-layout { grid-template-columns: minmax(280px, .9fr) minmax(0, 1.1fr); }
+      .story-grid { grid-template-columns: 1fr 1fr; }
+      .story-card:last-child { grid-column: 1 / -1; min-height: 330px; }
       .steps { grid-template-columns: repeat(5, minmax(125px, 1fr)); overflow-x: auto; padding: 0 2px 8px; }
       .source-list { grid-template-columns: repeat(2, 1fr); }
     }
@@ -248,6 +286,11 @@
       .section-head { display: block; }
       .section-head p { margin-top: 17px; }
       .calc-layout, .guide-grid, .myth-layout, .learn-layout { grid-template-columns: 1fr; }
+      .story-grid { grid-template-columns: 1fr; }
+      .story-card, .story-card:last-child { min-height: 0; }
+      .story-card:last-child { grid-column: auto; }
+      .prompt-deck { grid-template-columns: 1fr; align-items: start; }
+      .prompt-random { min-height: 42px; }
       .calc-card { min-height: 0; }
       .insight-card { min-height: 0; }
       .boundary-inner { grid-template-columns: 1fr; gap: 18px; }
@@ -284,10 +327,11 @@
       </a>
       <nav class="topnav" aria-label="Main navigation">
         <a href="#calculator">BMI calculator</a>
+        <a href="#icebreakers">Science ssul</a>
         <a href="#dna-ai">DNA + AI map</a>
         <a href="#limits">The limits</a>
       </nav>
-      <span class="nav-tag">Field guide · 01</span>
+      <span class="nav-tag">Icebreaker · 01</span>
     </div>
   </header>
 
@@ -295,13 +339,13 @@
     <section class="hero" id="top">
       <div class="shell hero-grid">
         <div>
-          <div class="eyebrow">A clear-eyed guide to body data</div>
+          <div class="eyebrow">An icebreaker with a science story</div>
           <h1>BMI is a number.<br><span>Your biology is a story.</span></h1>
-          <p class="hero-copy">Start with two measurements. Then discover what DNA science and AI can explore — and where responsible health insight needs much more context.</p>
-          <p class="hero-note">Height and mass can calculate BMI. They cannot reveal your DNA or predict every disease, symptom, or pain.</p>
+          <p class="hero-copy">Everyone has a story that does not fit in two measurements. Use this little calculator to open a conversation, then pass around a few strange, true facts about BMI, DNA, and AI.</p>
+          <p class="hero-note">No one needs to share a diagnosis, DNA result, or personal health story. Curiosity is enough.</p>
           <div class="hero-actions">
             <a class="button button-primary" href="#calculator">Calculate BMI <span aria-hidden="true">↘</span></a>
-            <a class="button button-quiet" href="#dna-ai">Explore DNA + AI <span aria-hidden="true">↘</span></a>
+            <a class="button button-quiet" href="#icebreakers">Find a conversation starter <span aria-hidden="true">↘</span></a>
           </div>
           <div class="trust-row" aria-label="Privacy and evidence notes">
             <span class="trust-pill"><b>●</b> One HTML file</span>
@@ -404,10 +448,49 @@
       </div>
     </div>
 
+    <section class="section icebreaker-section" id="icebreakers">
+      <div class="shell">
+        <div class="section-head">
+          <div><div class="kicker">02 — Science ssul · little stories to pass around</div><h2>A tiny fact can start<br>a real conversation.</h2></div>
+          <p>Three true stories, three low-pressure questions. Share a little, make something up, or pass. No medical or genetic details required.</p>
+        </div>
+        <div class="story-grid">
+          <article class="story-card history">
+            <div class="story-meta"><span>Artifact 01</span><span>A number with a past</span></div>
+            <div class="story-art"><div class="story-year">1830s<small>population patterns</small></div><div class="story-seal" aria-hidden="true">∑</div></div>
+            <h3>Before BMI, a population puzzle.</h3>
+            <p>The formula traces back to Belgian statistician Adolphe Quetelet’s 19th-century work on population averages. Today BMI is used as a screening measure, but one formula still cannot tell a whole person’s story.</p>
+            <a class="story-source" href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10693914/" target="_blank" rel="noopener noreferrer">Read the history ↗</a>
+            <button class="story-prompt-button" type="button" data-prompt="What is a number you bump into every day that never tells the whole story?">Take this question</button>
+          </article>
+          <article class="story-card dna">
+            <div class="story-meta"><span>Artifact 02</span><span>A tiny alphabet</span></div>
+            <div class="story-art" aria-label="The four DNA letters: A, C, G, and T"><span class="dna-letter">A</span><span class="dna-letter">C</span><span class="dna-letter">G</span><span class="dna-letter">T</span><span class="dna-scale">about<br>3 billion<br>letters</span></div>
+            <h3>Four letters. Billions of places to look.</h3>
+            <p>The human genome has about 3 billion DNA base pairs. AI helps researchers search large biological datasets for patterns; it cannot reconstruct anyone’s DNA from height and weight.</p>
+            <a class="story-source" href="https://www.genome.gov/about-genomics/fact-sheets/A-Brief-Guide-to-Genomics" target="_blank" rel="noopener noreferrer">Explore the genome ↗</a>
+            <button class="story-prompt-button" type="button" data-prompt="If you could add one harmless, silly feature to the human user manual, what would it be?">Take this question</button>
+          </article>
+          <article class="story-card bodies">
+            <div class="story-meta"><span>Artifact 03</span><span>Same number, new story</span></div>
+            <div class="story-art"><div class="same-number">22.0<small>person A</small></div><span class="same-mark" aria-hidden="true">≈</span><div class="same-number">22.0<small>person B</small></div></div>
+            <h3>A shared BMI is not a shared body.</h3>
+            <p>Two people can have the same BMI and different amounts of muscle, fat, and bone. The calculator cannot see those differences — or the things that make each person themselves.</p>
+            <a class="story-source" href="https://www.cdc.gov/BMI/about/index.html" target="_blank" rel="noopener noreferrer">See what BMI misses ↗</a>
+            <button class="story-prompt-button" type="button" data-prompt="What is a small talent or habit a two-number profile could never show?">Take this question</button>
+          </article>
+        </div>
+        <div class="prompt-deck">
+          <div><div class="prompt-deck-label">Pass it around</div><p id="promptText" aria-live="polite">Choose a question from a story card, or let the page pick one. Passing is always welcome.</p><span class="prompt-deck-note">No answers are collected or saved. This is a conversation starter, not an AI chat.</span></div>
+          <button class="button prompt-random" id="randomPrompt" type="button">Surprise me ↗</button>
+        </div>
+      </div>
+    </section>
+
     <section class="section guide-section" id="dna-ai">
       <div class="shell">
         <div class="section-head">
-          <div><div class="kicker">02 — The discovery map</div><h2>DNA science has<br>more than one lens.</h2></div>
+          <div><div class="kicker">03 — The discovery map</div><h2>DNA science has<br>more than one lens.</h2></div>
           <p>AI can help researchers find patterns in complex biological data. Choose a topic to see what it studies — and what it cannot claim.</p>
         </div>
         <div class="guide-grid">
@@ -458,7 +541,7 @@
     <section class="section myth-section" id="limits">
       <div class="shell">
         <div class="section-head">
-          <div><div class="kicker">03 — The honest boundary</div><h2>More data can help.<br>It still has limits.</h2></div>
+          <div><div class="kicker">04 — The honest boundary</div><h2>More data can help.<br>It still has limits.</h2></div>
           <p>Health is shaped by biology, environment, time, and chance. No single score or AI system captures every cause of disease or pain.</p>
         </div>
         <div class="myth-layout">
@@ -481,7 +564,7 @@
     <section class="section learn-section" id="learn">
       <div class="shell">
         <div class="section-head">
-          <div><div class="kicker">04 — Learn in a minute</div><h2>Curiosity, with guardrails.</h2></div>
+          <div><div class="kicker">05 — Learn in a minute</div><h2>Questions, not confessions.</h2></div>
           <p>Tap a prompt for a short explainer. These evidence-based notes run locally; there is no chatbot or personal health prediction.</p>
         </div>
         <div class="learn-layout">
@@ -512,6 +595,8 @@
           <a class="source-link" href="https://www.genome.gov/genetics-glossary/Polygenic-Risk-Score-PRS" target="_blank" rel="noopener noreferrer"><span>04</span>NHGRI · Polygenic risk scores</a>
           <a class="source-link" href="https://www.genome.gov/about-genomics/policy-issues/Privacy" target="_blank" rel="noopener noreferrer"><span>05</span>NHGRI · Privacy in genomics</a>
           <a class="source-link" href="https://www.cdc.gov/bmi/faq/index.html" target="_blank" rel="noopener noreferrer"><span>06</span>CDC · BMI questions and answers</a>
+          <a class="source-link" href="https://pmc.ncbi.nlm.nih.gov/articles/PMC10693914/" target="_blank" rel="noopener noreferrer"><span>07</span>Cureus · BMI history review</a>
+          <a class="source-link" href="https://www.genome.gov/about-genomics/fact-sheets/A-Brief-Guide-to-Genomics" target="_blank" rel="noopener noreferrer"><span>08</span>NHGRI · A brief guide to genomics</a>
         </div>
         <p class="source-caveat">BMI categories vary by population and age. This page uses the adult Korean reference shown in the cited KSSO guideline. Children and teens need age- and sex-specific interpretation. Sources are educational references, not personal medical advice.</p>
       </div>
@@ -670,6 +755,22 @@
           document.getElementById('answerTitle').textContent = answer.title;
           document.getElementById('answerText').textContent = answer.text;
         });
+      });
+
+      const promptText = document.getElementById('promptText');
+      const storyPromptButtons = Array.from(document.querySelectorAll('.story-prompt-button'));
+      storyPromptButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          promptText.textContent = button.dataset.prompt;
+        });
+      });
+
+      document.getElementById('randomPrompt').addEventListener('click', () => {
+        const options = storyPromptButtons.map((button) => button.dataset.prompt);
+        const current = promptText.textContent;
+        const nextOptions = options.filter((prompt) => prompt !== current);
+        const choices = nextOptions.length ? nextOptions : options;
+        promptText.textContent = choices[Math.floor(Math.random() * choices.length)];
       });
     })();
   </script>
